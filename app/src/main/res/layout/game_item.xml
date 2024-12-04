@@ -15,6 +15,7 @@
         android:id="@+id/game_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:textColor="#000" />
+        android:text="Nome do Jogo"
+        android:textColor="@android:color/white"/> <!-- Definindo a cor como branco -->
+
 </LinearLayout>
