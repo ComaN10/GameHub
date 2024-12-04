@@ -12,6 +12,8 @@ import android.speech.SpeechRecognizer;
 import android.view.View;
 import android.widget.Button;
 import android.os.Build;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -35,6 +37,12 @@ public class MainActivity extends AppCompatActivity {
                 startVoiceRecognition();
             }
         });
+        RecyclerView recyclerView = findViewById(R.id.games_recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        List<ApplicationInfo> installedGames = getInstalledGames();
+        GameAdapter adapter = new GameAdapter(this, installedGames);
+        recyclerView.setAdapter(adapter);
     }
 
     // Inicia o reconhecimento de voz
@@ -99,6 +107,22 @@ public class MainActivity extends AppCompatActivity {
         goToMarket.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(goToMarket);
     }
+    // Adicione este método para obter a lista de jogos
+    private List<ApplicationInfo> getInstalledGames() {
+        PackageManager packageManager = getPackageManager();
+        List<ApplicationInfo> allApps = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
+        List<ApplicationInfo> games = new ArrayList<>();
+
+        for (ApplicationInfo app : allApps) {
+            if ((app.flags & ApplicationInfo.FLAG_SYSTEM) == 0 &&
+                    app.category == ApplicationInfo.CATEGORY_GAME) {
+                games.add(app);
+            }
+        }
+        return games;
+    }
+
+
 
 
 }

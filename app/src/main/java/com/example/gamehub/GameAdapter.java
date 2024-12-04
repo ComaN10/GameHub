@@ -1,56 +1,66 @@
 package com.example.gamehub;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
+import java.util.List;
 
-public class GameAdapter extends android.widget.BaseAdapter {
+public class GameAdapter extends RecyclerView.Adapter<GameAdapter.GameViewHolder> {
 
-    private final Context context;
-    private ArrayList<String> games;
+    private Context context;
+    private List<ApplicationInfo> gamesList;
+    private PackageManager packageManager;
 
-    public GameAdapter(Context context, ArrayList<String> games) {
+    public GameAdapter(Context context, List<ApplicationInfo> gamesList) {
         this.context = context;
-        this.games = games;
-    }
-
-    @Override
-    public int getCount() {
-        return games.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return games.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
+        this.gamesList = gamesList;
+        this.packageManager = context.getPackageManager();
     }
 
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(android.R.layout.simple_list_item_1, parent, false);
-        }
-
-        TextView textView = convertView.findViewById(android.R.id.text1);
-        textView.setText(games.get(position));
-
-        return convertView;
+    public GameViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.game_item, parent, false);
+        return new GameViewHolder(view);
     }
 
-    public void updateList(ArrayList<String> newGames) {
-        this.games = newGames;
-        notifyDataSetChanged();
+    @Override
+    public void onBindViewHolder(@NonNull GameViewHolder holder, int position) {
+        ApplicationInfo gameInfo = gamesList.get(position);
+        holder.gameName.setText(packageManager.getApplicationLabel(gameInfo));
+        holder.gameIcon.setImageDrawable(packageManager.getApplicationIcon(gameInfo));
+
+        holder.itemView.setOnClickListener(v -> {
+            Intent launchIntent = packageManager.getLaunchIntentForPackage(gameInfo.packageName);
+            if (launchIntent != null) {
+                context.startActivity(launchIntent);
+            }
+        });
+    }
+
+    @Override
+    public int getItemCount() {
+        return gamesList.size();
+    }
+
+    public static class GameViewHolder extends RecyclerView.ViewHolder {
+        TextView gameName;
+        ImageView gameIcon;
+
+        public GameViewHolder(@NonNull View itemView) {
+            super(itemView);
+            gameName = itemView.findViewById(R.id.game_name);
+            gameIcon = itemView.findViewById(R.id.game_icon);
+        }
     }
 }
