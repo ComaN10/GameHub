@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_populares"
+        android:title="Populares" />
+    <item
+        android:id="@+id/nav_acao"
+        android:title="Ação" />
+    <item
+        android:id="@+id/nav_aventura"
+        android:title="Aventura" />
+    <item
+        android:id="@+id/nav_rpg"
+        android:title="RPG" />
+    <item
+        android:id="@+id/nav_estrategia"
+        android:title="Estratégia" />
+    <item
+        android:id="@+id/nav_terror"
+        android:title="Terror" />
+    <item
+        android:id="@+id/nav_plataforma"
+        android:title="Plataforma" />
+    <item
+        android:id="@+id/nav_corridas"
+        android:title="Corridas" />
+    <item
+        android:id="@+id/nav_puzzle"
+        android:title="Puzzle" />
+</menu>

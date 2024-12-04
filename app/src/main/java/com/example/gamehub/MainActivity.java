@@ -9,11 +9,17 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
+import com.google.android.material.navigation.NavigationView;
+import com.example.gamehub.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +27,9 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private SpeechRecognizer speechRecognizer;
     private Button voiceSearchButton;
+    private DrawerLayout drawerLayout;
+    private ImageButton btnOpenDrawer;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         voiceSearchButton = findViewById(R.id.voice_search_button);
+        btnOpenDrawer = findViewById(R.id.btn_open_drawer);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.navigation_view);
 
         voiceSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -35,6 +47,52 @@ public class MainActivity extends AppCompatActivity {
                 startVoiceRecognition();
             }
         });
+
+        btnOpenDrawer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawerLayout.openDrawer(navigationView);
+            }
+        });
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+
+                if (id == R.id.nav_populares) {
+                    // Implementar lógica para "Populares"
+                    return true;
+                } else if (id == R.id.nav_acao) {
+                    // Implementar lógica para "Ação"
+                    return true;
+                } else if (id == R.id.nav_aventura) {
+                    // Implementar lógica para "Aventura"
+                    return true;
+                } else if (id == R.id.nav_rpg) {
+                    // Implementar lógica para "RPG"
+                    return true;
+                } else if (id == R.id.nav_estrategia) {
+                    // Implementar lógica para "Estratégia"
+                    return true;
+                } else if (id == R.id.nav_terror) {
+                    // Implementar lógica para "Terror"
+                    return true;
+                } else if (id == R.id.nav_plataforma) {
+                    // Implementar lógica para "Plataforma"
+                    return true;
+                } else if (id == R.id.nav_corridas) {
+                    // Implementar lógica para "Corridas"
+                    return true;
+                } else if (id == R.id.nav_puzzle) {
+                    // Implementar lógica para "Puzzle"
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+
     }
 
     // Inicia o reconhecimento de voz
@@ -99,6 +157,4 @@ public class MainActivity extends AppCompatActivity {
         goToMarket.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(goToMarket);
     }
-
-
 }

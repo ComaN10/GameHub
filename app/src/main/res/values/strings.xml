@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">GameHub</string>
+    <string name="open_drawer">Abrir Menu Lateral</string>
 </resources>

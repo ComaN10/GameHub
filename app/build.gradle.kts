@@ -32,6 +32,8 @@ android {
 }
 
 dependencies {
+    implementation ("androidx.drawerlayout:drawerlayout:1.1.1")
+    implementation ("com.google.android.material:material:1.5.0")
 
     implementation(libs.appcompat)
     implementation(libs.material)
