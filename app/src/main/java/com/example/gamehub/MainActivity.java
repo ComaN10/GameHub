@@ -38,11 +38,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Inicializando os elementos de UI
         voiceSearchButton = findViewById(R.id.voice_search_button);
-        btnOpenDrawer = findViewById(R.id.btn_open_drawer);
+        btnOpenDrawer = findViewById(R.id.btn_open_drawer);  // Certifique-se de que o ID está correto no XML
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.navigation_view);
 
+        // Configurando o clique do botão de pesquisa por voz
         voiceSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -50,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Configurando o clique do botão para abrir o menu lateral
         btnOpenDrawer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Configuração do NavigationView
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -95,13 +99,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Configuração do RecyclerView
         RecyclerView recyclerView = findViewById(R.id.games_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        // Obtendo e configurando os jogos instalados
         List<ApplicationInfo> installedGames = getInstalledGames();
         GameAdapter adapter = new GameAdapter(this, installedGames);
         recyclerView.setAdapter(adapter);
     }
+
 
     // Inicia o reconhecimento de voz
     private void startVoiceRecognition() {
