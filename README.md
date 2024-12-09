@@ -1,11 +1,11 @@
 You're right! Here's the continuation of the Markdown file in full:
 
-```
+
 # **GameHub**
 
 GameHub is a mobile application developed for Android that allows users to search and open installed games or apps using voice commands. Additionally, it provides the functionality to search for locations using Google Maps through voice queries.
 
----
+
 
 ## **Features**
 
@@ -20,7 +20,7 @@ GameHub is a mobile application developed for Android that allows users to searc
   - Integrated with a navigation drawer to explore different categories of games.
   - A RecyclerView displays installed games in a categorized list.
 
----
+
 
 ## **Getting Started**
 
@@ -38,7 +38,7 @@ GameHub is a mobile application developed for Android that allows users to searc
    ```bash
    git clone https://github.com/yourusername/GameHub.git
 
-```
+
 
 1.  Open the project in **Android Studio**.
 2.  Sync the project with Gradle to install dependencies:
@@ -177,10 +177,6 @@ If you have any questions or need further assistance, feel free to reach out:
 
 ```
 
-### **Customization Instructions**
-Replace:
-- `yourusername` with your GitHub username.
-- `your_email@example.com` with your contact email.
 
 Let me know if you need further refinements!
 
