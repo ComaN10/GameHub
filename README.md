@@ -161,7 +161,7 @@ Contributions are welcome! To contribute:
 **License**
 -----------
 
-This project is licensed under the [MIT License](https://chatgpt.com/c/LICENSE).
+This project is licensed under the [MIT License]
 
 * * * * *
 
