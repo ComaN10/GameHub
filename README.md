@@ -1,5 +1,3 @@
-You're right! Here's the continuation of the Markdown file in full:
-
 
 # **GameHub**
 
@@ -170,10 +168,12 @@ This project is licensed under the [MIT License](https://chatgpt.com/c/LICENSE).
 **Contact**
 -----------
 
-If you have any questions or need further assistance, feel free to reach out:
+-   **Email:** <carlosmanuel2003@gmail.com>
+-   **GitHub:** [yourusername](https://github.com/ComaN10)
 
--   **Email:** <your_email@example.com>
--   **GitHub:** [yourusername](https://github.com/yourusername)
+
+-   **Email:** <>
+-   **GitHub:** [yourusername](https://github.com/jopeodelas)
 
 ```
 
