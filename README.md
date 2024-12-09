@@ -169,15 +169,10 @@ This project is licensed under the [MIT License](https://chatgpt.com/c/LICENSE).
 -----------
 
 -   **Email:** <carlosmanuel2003@gmail.com>
--   **GitHub:** [yourusername](https://github.com/ComaN10)
+-   **GitHub:** [ComaN](https://github.com/ComaN10)
 
 
 -   **Email:** <>
--   **GitHub:** [yourusername](https://github.com/jopeodelas)
-
-```
+-   **GitHub:** [jopeodelas](https://github.com/jopeodelas)
 
 
-Let me know if you need further refinements!
-
-```
