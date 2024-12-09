@@ -168,11 +168,10 @@ This project is licensed under the [MIT License]
 **Contact**
 -----------
 
--   **Email:** <carlosmanuel2003@gmail.com>
+
 -   **GitHub:** [ComaN](https://github.com/ComaN10)
 
 
--   **Email:** <>
 -   **GitHub:** [jopeodelas](https://github.com/jopeodelas)
 
 
