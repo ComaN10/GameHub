@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,11 +21,18 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.GameViewHolder
     private Context context;
     private List<ApplicationInfo> gamesList;
     private PackageManager packageManager;
+    private OnGameClickListener onGameClickListener; // Interface para clique curto
 
-    public GameAdapter(Context context, List<ApplicationInfo> gamesList) {
+    // Interface para callback de fala do nome do jogo
+    public interface OnGameClickListener {
+        void onGameNameSpeak(String gameName);
+    }
+
+    public GameAdapter(Context context, List<ApplicationInfo> gamesList, OnGameClickListener listener) {
         this.context = context;
         this.gamesList = gamesList;
         this.packageManager = context.getPackageManager();
+        this.onGameClickListener = listener;
     }
 
     @NonNull
@@ -37,14 +45,26 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.GameViewHolder
     @Override
     public void onBindViewHolder(@NonNull GameViewHolder holder, int position) {
         ApplicationInfo gameInfo = gamesList.get(position);
-        holder.gameName.setText(packageManager.getApplicationLabel(gameInfo));
+        String gameName = packageManager.getApplicationLabel(gameInfo).toString();
+
+        // Define o nome e ícone do jogo
+        holder.gameName.setText(gameName);
         holder.gameIcon.setImageDrawable(packageManager.getApplicationIcon(gameInfo));
 
+        // Configuração do clique curto
         holder.itemView.setOnClickListener(v -> {
+            if (onGameClickListener != null) {
+                onGameClickListener.onGameNameSpeak(gameName); // Falar o nome do jogo
+            }
+        });
+
+        // Configuração do clique longo (mais de 2 segundos)
+        holder.itemView.setOnLongClickListener(v -> {
             Intent launchIntent = packageManager.getLaunchIntentForPackage(gameInfo.packageName);
             if (launchIntent != null) {
-                context.startActivity(launchIntent);
+                context.startActivity(launchIntent); // Abre o jogo
             }
+            return true;
         });
     }
 

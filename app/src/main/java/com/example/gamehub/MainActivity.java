@@ -1,24 +1,19 @@
 package com.example.gamehub;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
-import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -31,60 +26,89 @@ import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-    private SpeechRecognizer speechRecognizer;
-    private Button voiceSearchButton;
-    private DrawerLayout drawerLayout;
-    private ImageButton btnOpenDrawer;
-    private NavigationView navigationView;
+    private ImageButton voiceSearchButton; // Botão de pesquisa por voz
+    private ImageButton btnOpenDrawer; // Botão para abrir o menu lateral
+    private DrawerLayout drawerLayout; // Layout do menu lateral
+    private NavigationView navigationView; // Navegação do menu lateral
+    private TextToSpeech textToSpeech; // Instância do Text-to-Speech
+
+    private Button helpButton; // Botão para ajuda por voz
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Inicializando os elementos de UI
+        // Inicialização dos componentes de UI
         voiceSearchButton = findViewById(R.id.voice_search_button);
         btnOpenDrawer = findViewById(R.id.btn_open_drawer);
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.navigation_view);
+        helpButton = findViewById(R.id.help_button);
 
-        // Configurando o clique do botão de pesquisa por voz
-        voiceSearchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startVoiceRecognition();
+        // Inicializar o Text-to-Speech
+        textToSpeech = new TextToSpeech(this, status -> {
+            if (status == TextToSpeech.SUCCESS) {
+                int result = textToSpeech.setLanguage(Locale.getDefault());
+                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    Toast.makeText(this, "Idioma não suportado no TTS.", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "Falha ao inicializar o TTS.", Toast.LENGTH_SHORT).show();
             }
         });
+        // Configuração do clique no botão de ajuda
+        helpButton.setOnClickListener(v -> speakInstructions());
 
-        // Configurando o clique do botão para abrir o menu lateral
-        btnOpenDrawer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                drawerLayout.openDrawer(navigationView);
-            }
+        // Configuração do clique no botão de pesquisa por voz
+        voiceSearchButton.setOnClickListener(v -> startVoiceRecognition());
+
+        // Configuração do clique no botão de abrir o menu lateral
+        btnOpenDrawer.setOnClickListener(v -> drawerLayout.openDrawer(navigationView));
+
+        // Configuração do menu lateral
+        navigationView.setNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+            // Ações específicas para cada item do menu podem ser adicionadas aqui
+            return true;
         });
 
-        // Configuração do NavigationView
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
-                // Lógica para cada item do menu
-                return true;
-            }
-        });
-
-        // Configuração do RecyclerView
+        // Configuração do RecyclerView para exibir jogos instalados
         RecyclerView recyclerView = findViewById(R.id.games_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Obtendo e configurando os jogos instalados
+        // Obter e exibir os jogos instalados
         List<ApplicationInfo> installedGames = getInstalledGames();
-        GameAdapter adapter = new GameAdapter(this, installedGames);
+        GameAdapter adapter = new GameAdapter(this, installedGames, this::speakGameName);
         recyclerView.setAdapter(adapter);
     }
+    /**
+     * Fala as instruções de uso da aplicação.
+     */
+    private void speakInstructions() {
+        String instructions = "Bem-vindo à GameHub. Aqui está como usar a aplicação. "
+                + "Primeiro, você pode clicar no botão de pesquisa por voz no topo para procurar jogos instalados. "
+                + "Na lista de jogos, você pode clicar no nome de um jogo para ouvir o nome. "
+                + "Se quiser abrir o jogo, pressione e segure o nome do jogo por mais de dois segundos. "
+                + "Para ajuda, clique no botão de ajuda. "
+                + "Esperamos que você aproveite a aplicação!";
 
-    // Inicia o reconhecimento de voz
+        textToSpeech.speak(instructions, TextToSpeech.QUEUE_FLUSH, null, null);
+    }
+    /**
+     * Fala o nome do jogo selecionado usando Text-to-Speech.
+     *
+     * @param gameName Nome do jogo a ser falado.
+     */
+    private void speakGameName(String gameName) {
+        if (textToSpeech != null) {
+            textToSpeech.speak(gameName, TextToSpeech.QUEUE_FLUSH, null, null);
+        }
+    }
+
+    /**
+     * Inicia o reconhecimento de voz para comandos do usuário.
+     */
     private void startVoiceRecognition() {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
@@ -96,43 +120,55 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Lida com o resultado do reconhecimento de voz
+    /**
+     * Manipula o resultado da atividade de reconhecimento de voz.
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 100 && resultCode == RESULT_OK) {
+        if (requestCode == 100 && resultCode == RESULT_OK && data != null) {
             ArrayList<String> matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-            String userCommand = matches.get(0).toLowerCase(); // Converte o comando para minúsculas
+            if (matches != null && !matches.isEmpty()) {
+                String userCommand = matches.get(0).toLowerCase();
 
-            // Decide se é um comando para abrir um jogo ou buscar no Google Maps
-            if (userCommand.contains("buscar") || userCommand.contains("procurar")) {
-                String location = userCommand.replace("buscar", "").trim();
-                location = location.replace("procurar", "").trim();
-                searchLocationOnMaps(location); // Chama o método para abrir o Google Maps
-            } else {
-                openApp(userCommand); // Método já implementado para abrir apps/jogos
+                if (userCommand.contains("buscar") || userCommand.contains("procurar")) {
+                    String location = userCommand.replace("buscar", "").replace("procurar", "").trim();
+                    searchLocationOnMaps(location);
+                } else {
+                    openApp(userCommand);
+                }
             }
         }
     }
 
-    // Método para buscar locais no Google Maps
+    @Override
+    protected void onDestroy() {
+        // Liberar o Text-to-Speech ao destruir a atividade
+        if (textToSpeech != null) {
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+        }
+        super.onDestroy();
+    }
+
+    /**
+     * Abre o Google Maps com a localização especificada.
+     */
     private void searchLocationOnMaps(String location) {
         if (location.isEmpty()) {
-            Toast.makeText(this, "Por favor, diga o nome do local.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Por favor, especifique uma localização.", Toast.LENGTH_SHORT).show();
             return;
         }
 
         try {
-            // Cria uma URI para o Google Maps com a localização fornecida
             Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + Uri.encode(location));
             Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-            mapIntent.setPackage("com.google.android.apps.maps"); // Garante que o Google Maps será usado
+            mapIntent.setPackage("com.google.android.apps.maps");
 
-            // Verifica se o Google Maps está instalado
             if (mapIntent.resolveActivity(getPackageManager()) != null) {
                 startActivity(mapIntent);
             } else {
-                Toast.makeText(this, "Google Maps não está instalado.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "O Google Maps não está instalado.", Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
             Log.e("GameHub", "Erro ao abrir o Google Maps: " + e.getMessage());
@@ -140,10 +176,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Abre um aplicativo ou jogo pelo nome.
+     */
     private void openApp(String appName) {
         PackageManager packageManager = getPackageManager();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // Android 11 e superior
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             Intent intent = new Intent(Intent.ACTION_MAIN, null);
             intent.addCategory(Intent.CATEGORY_LAUNCHER);
             List<ResolveInfo> resolveInfos = packageManager.queryIntentActivities(intent, 0);
@@ -152,12 +191,8 @@ public class MainActivity extends AppCompatActivity {
                 String appLabel = resolveInfo.loadLabel(packageManager).toString().toLowerCase();
                 if (appLabel.contains(appName.toLowerCase())) {
                     String packageName = resolveInfo.activityInfo.packageName;
-                    Intent launchIntent = packageManager.getLaunchIntentForPackage(packageName);
-                    if (launchIntent != null) {
-                        launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(launchIntent);
-                        return;
-                    }
+                    launchApp(packageManager, packageName);
+                    return;
                 }
             }
         } else {
@@ -165,31 +200,40 @@ public class MainActivity extends AppCompatActivity {
             for (ApplicationInfo appInfo : installedApps) {
                 String appLabel = packageManager.getApplicationLabel(appInfo).toString().toLowerCase();
                 if (appLabel.contains(appName.toLowerCase())) {
-                    Intent launchIntent = packageManager.getLaunchIntentForPackage(appInfo.packageName);
-                    if (launchIntent != null) {
-                        launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(launchIntent);
-                        return;
-                    }
+                    launchApp(packageManager, appInfo.packageName);
+                    return;
                 }
             }
         }
 
-        // Caso a aplicação não seja encontrada, abra a Google Play Store
+        openGooglePlayStore(appName);
+    }
+
+    private void launchApp(PackageManager packageManager, String packageName) {
+        Intent launchIntent = packageManager.getLaunchIntentForPackage(packageName);
+        if (launchIntent != null) {
+            launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(launchIntent);
+        }
+    }
+
+    private void openGooglePlayStore(String appName) {
         Uri uri = Uri.parse("market://search?q=" + appName);
         Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
         goToMarket.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(goToMarket);
     }
 
+    /**
+     * Recupera a lista de jogos instalados no dispositivo.
+     */
     private List<ApplicationInfo> getInstalledGames() {
         PackageManager packageManager = getPackageManager();
         List<ApplicationInfo> allApps = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
         List<ApplicationInfo> games = new ArrayList<>();
 
         for (ApplicationInfo app : allApps) {
-            if ((app.flags & ApplicationInfo.FLAG_SYSTEM) == 0 &&
-                    app.category == ApplicationInfo.CATEGORY_GAME) {
+            if ((app.flags & ApplicationInfo.FLAG_SYSTEM) == 0 && app.category == ApplicationInfo.CATEGORY_GAME) {
                 games.add(app);
             }
         }
