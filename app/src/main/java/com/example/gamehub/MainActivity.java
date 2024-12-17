@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout; // Layout do menu lateral
     private NavigationView navigationView; // Navegação do menu lateral
     private TextToSpeech textToSpeech; // Instância do Text-to-Speech
-
     private Button helpButton; // Botão para ajuda por voz
 
     @Override
@@ -57,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Falha ao inicializar o TTS.", Toast.LENGTH_SHORT).show();
             }
         });
+
         // Configuração do clique no botão de ajuda
         helpButton.setOnClickListener(v -> speakInstructions());
 
@@ -69,7 +69,32 @@ public class MainActivity extends AppCompatActivity {
         // Configuração do menu lateral
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
-            // Ações específicas para cada item do menu podem ser adicionadas aqui
+            String searchQuery = "";
+
+            if (id == R.id.nav_populares) {
+                searchQuery = "jogos populares";
+            } else if (id == R.id.nav_acao) {
+                searchQuery = "jogos de ação";
+            } else if (id == R.id.nav_aventura) {
+                searchQuery = "jogos de aventura";
+            } else if (id == R.id.nav_rpg) {
+                searchQuery = "jogos de RPG";
+            } else if (id == R.id.nav_estrategia) {
+                searchQuery = "jogos de estratégia";
+            } else if (id == R.id.nav_terror) {
+                searchQuery = "jogos de terror";
+            } else if (id == R.id.nav_plataforma) {
+                searchQuery = "jogos de plataforma";
+            } else if (id == R.id.nav_corridas) {
+                searchQuery = "jogos de corridas";
+            } else if (id == R.id.nav_puzzle) {
+                searchQuery = "jogos de puzzle";
+            }
+
+            if (!searchQuery.isEmpty()) {
+                openGooglePlayStore(searchQuery);
+            }
+            drawerLayout.closeDrawers();
             return true;
         });
 
@@ -82,12 +107,13 @@ public class MainActivity extends AppCompatActivity {
         GameAdapter adapter = new GameAdapter(this, installedGames, this::speakGameName);
         recyclerView.setAdapter(adapter);
     }
+
     /**
      * Fala as instruções de uso da aplicação.
      */
     private void speakInstructions() {
         String instructions = "Bem-vindo à GameHub. Aqui está como usar a aplicação. "
-                + "Primeiro, você pode clicar no botão de pesquisa por voz no topo para procurar jogos instalados. "
+                + "Primeiro, você pode clicar no botão de pesquisa por voz para procurar jogos instalados. "
                 + "Na lista de jogos, você pode clicar no nome de um jogo para ouvir o nome. "
                 + "Se quiser abrir o jogo, pressione e segure o nome do jogo por mais de dois segundos. "
                 + "Para ajuda, clique no botão de ajuda. "
@@ -95,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
 
         textToSpeech.speak(instructions, TextToSpeech.QUEUE_FLUSH, null, null);
     }
+
     /**
      * Fala o nome do jogo selecionado usando Text-to-Speech.
      *
@@ -120,9 +147,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Manipula o resultado da atividade de reconhecimento de voz.
-     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -143,7 +167,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        // Liberar o Text-to-Speech ao destruir a atividade
         if (textToSpeech != null) {
             textToSpeech.stop();
             textToSpeech.shutdown();
@@ -151,9 +174,6 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    /**
-     * Abre o Google Maps com a localização especificada.
-     */
     private void searchLocationOnMaps(String location) {
         if (location.isEmpty()) {
             Toast.makeText(this, "Por favor, especifique uma localização.", Toast.LENGTH_SHORT).show();
@@ -176,9 +196,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Abre um aplicativo ou jogo pelo nome.
-     */
     private void openApp(String appName) {
         PackageManager packageManager = getPackageManager();
 
@@ -217,16 +234,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void openGooglePlayStore(String appName) {
-        Uri uri = Uri.parse("market://search?q=" + appName);
-        Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
-        goToMarket.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(goToMarket);
+    private void openGooglePlayStore(String query) {
+        try {
+            Uri uri = Uri.parse("market://search?q=" + Uri.encode(query));
+            Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
+            goToMarket.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            if (goToMarket.resolveActivity(getPackageManager()) != null) {
+                startActivity(goToMarket);
+            } else {
+                Toast.makeText(this, "Google Play Store não está instalado.", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            Log.e("GameHub", "Erro ao abrir Google Play Store: " + e.getMessage());
+            Toast.makeText(this, "Erro ao abrir Google Play Store.", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    /**
-     * Recupera a lista de jogos instalados no dispositivo.
-     */
     private List<ApplicationInfo> getInstalledGames() {
         PackageManager packageManager = getPackageManager();
         List<ApplicationInfo> allApps = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
