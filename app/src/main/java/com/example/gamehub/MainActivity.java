@@ -155,8 +155,11 @@ public class MainActivity extends AppCompatActivity {
             if (matches != null && !matches.isEmpty()) {
                 String userCommand = matches.get(0).toLowerCase();
 
-                if (userCommand.contains("buscar") || userCommand.contains("procurar")) {
-                    String location = userCommand.replace("buscar", "").replace("procurar", "").trim();
+                if (userCommand.startsWith("buscar")) {
+                    String query = userCommand.replace("buscar", "").trim();
+                    searchOnYouTube(query);
+                } else if (userCommand.contains("procurar")) {
+                    String location = userCommand.replace("procurar", "").trim();
                     searchLocationOnMaps(location);
                 } else {
                     openApp(userCommand);
@@ -165,13 +168,30 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        if (textToSpeech != null) {
-            textToSpeech.stop();
-            textToSpeech.shutdown();
+    /**
+     * Realiza uma busca no YouTube usando o termo fornecido.
+     *
+     * @param query O termo de busca.
+     */
+    private void searchOnYouTube(String query) {
+        if (query.isEmpty()) {
+            Toast.makeText(this, "Por favor, especifique o que buscar no YouTube.", Toast.LENGTH_SHORT).show();
+            return;
         }
-        super.onDestroy();
+
+        try {
+            Uri uri = Uri.parse("https://www.youtube.com/results?search_query=" + Uri.encode(query));
+            Intent youtubeIntent = new Intent(Intent.ACTION_VIEW, uri);
+
+            if (youtubeIntent.resolveActivity(getPackageManager()) != null) {
+                startActivity(youtubeIntent);
+            } else {
+                Toast.makeText(this, "O YouTube não está instalado.", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            Log.e("GameHub", "Erro ao abrir o YouTube: " + e.getMessage());
+            Toast.makeText(this, "Erro ao abrir o YouTube.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void searchLocationOnMaps(String location) {
@@ -261,5 +281,14 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return games;
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (textToSpeech != null) {
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+        }
+        super.onDestroy();
     }
 }
