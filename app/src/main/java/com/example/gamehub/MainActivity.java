@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         // Inicializar o Text-to-Speech
         textToSpeech = new TextToSpeech(this, status -> {
             if (status == TextToSpeech.SUCCESS) {
-                int result = textToSpeech.setLanguage(Locale.getDefault());
+                int result = textToSpeech.setLanguage(new Locale("pt", "PT"));
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                     Toast.makeText(this, "Idioma não suportado no TTS.", Toast.LENGTH_SHORT).show();
                 }
@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Falha ao inicializar o TTS.", Toast.LENGTH_SHORT).show();
             }
         });
+
 
         // Configuração do clique no botão de ajuda
         helpButton.setOnClickListener(v -> speakInstructions());
@@ -106,6 +107,11 @@ public class MainActivity extends AppCompatActivity {
         List<ApplicationInfo> installedGames = getInstalledGames();
         GameAdapter adapter = new GameAdapter(this, installedGames, this::speakGameName);
         recyclerView.setAdapter(adapter);
+
+        // Verificar se há mais de 5 jogos e exibir um aviso
+        if (installedGames.size() > 5) {
+            Toast.makeText(this, "Você tem mais de 5 jogos instalados. Role a lista para ver todos.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**

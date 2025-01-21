@@ -72,13 +72,13 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/games_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:clipToPadding="false"
-            android:orientation="horizontal"
-            android:scrollbars="none" />
+            android:layout_height="180dp"
+        android:layout_marginTop="16dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:clipToPadding="false"
+        android:scrollbars="vertical" />
+
 
         <!-- Nome do jogo selecionado -->
         <TextView
@@ -89,7 +89,7 @@
             android:textSize="18sp"
             android:textStyle="bold"
             android:gravity="center"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="10dp" />
 
         <!-- Botão de microfone e setas laterais -->
         <LinearLayout
@@ -97,7 +97,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center"
-            android:layout_marginTop="24dp">
+            android:layout_marginTop="20dp">
 
             <ImageButton
                 android:id="@+id/voice_search_button"
@@ -106,8 +106,8 @@
                 android:src="@drawable/ic_microphone"
                 android:contentDescription="Pesquisar por voz"
                 android:background="@drawable/circle_background"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp" />
+                android:layout_marginStart="1dp"
+                android:layout_marginEnd="1dp" />
         </LinearLayout>
     </LinearLayout>
 
